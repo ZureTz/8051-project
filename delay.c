@@ -1,4 +1,4 @@
-static void Delay100us(void) //@12.000MHz
+static void delay100us(void) //@12.000MHz
 {
   unsigned char data i;
 
@@ -7,7 +7,7 @@ static void Delay100us(void) //@12.000MHz
     ;
 }
 
-// Call Delay100us 10 times to make 1 millisecond
+// Call delay100us 10 times to make 1 millisecond
 void delayMiliseconds(unsigned long miliseconds)
 {
   // i is a counter for 100us delay
@@ -17,7 +17,7 @@ void delayMiliseconds(unsigned long miliseconds)
   {
     for (i = 0; i < 10; i++)
     {
-      Delay100us();
+      delay100us();
     }
   }
 }

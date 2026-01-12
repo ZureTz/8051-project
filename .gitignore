@@ -3,3 +3,6 @@
 # Keil uVision files
 Listings/
 Objects/
+
+# Language server files
+c_cpp_properties.json
