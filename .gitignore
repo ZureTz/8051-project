@@ -1,0 +1,5 @@
+# 8051 Project Ignore File
+
+# Keil uVision files
+Listings/
+Objects/
