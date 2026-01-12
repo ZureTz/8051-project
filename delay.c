@@ -1,7 +1,10 @@
+#include <intrins.h> /* for _nop_() */
+
 static void delay100us(void) //@12.000MHz
 {
   unsigned char data i;
 
+  _nop_();
   i = 47;
   while (--i)
     ;
