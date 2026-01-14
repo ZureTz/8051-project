@@ -6,16 +6,16 @@
 // define buzzer pin
 sbit BUZZER = P1 ^ 5;
 
-// Musical note frequencies (half period in microseconds for middle C octave)
+// Musical note frequencies (half period in microseconds, raised by one octave)
 // Half period = 1/(2*frequency) * 1000000
-#define NOTE_1_DO 1908  // C4 - 262 Hz
-#define NOTE_2_RE 1701  // D4 - 294 Hz
-#define NOTE_3_MI 1515  // E4 - 330 Hz
-#define NOTE_4_FA 1433  // F4 - 349 Hz
-#define NOTE_5_SOL 1276 // G4 - 392 Hz
-#define NOTE_6_LA 1136  // A4 - 440 Hz
-#define NOTE_7_SI 1012  // B4 - 494 Hz
-#define NOTE_REST 0     // Rest/silence
+#define NOTE_1_DO 954  // C5 - 523 Hz (raised one octave)
+#define NOTE_2_RE 851  // D5 - 587 Hz
+#define NOTE_3_MI 758  // E5 - 659 Hz
+#define NOTE_4_FA 716  // F5 - 698 Hz
+#define NOTE_5_SOL 638 // G5 - 784 Hz
+#define NOTE_6_LA 568  // A5 - 880 Hz
+#define NOTE_7_SI 506  // B5 - 988 Hz
+#define NOTE_REST 0    // Rest/silence
 
 // Duration for each note in milliseconds
 #define NOTE_DURATION 500
@@ -89,21 +89,22 @@ void playNote(unsigned char note, unsigned int duration)
   playTone(halfPeriod, duration);
 }
 
-// Happy Birthday melody
-// Based on sheet music: 5 5 6 5 1 7, 5 5 6 5 2 1, 5 5 5 3 1 7 6, 4 4 3 1 2 1
+// Last Christmas melody - main chorus (faster tempo)
+// Notes: G G F C G G A F, D D G G A F D E F E D
+// Converted to numbers: 5 5 4 1 5 5 6 4, 2 2 5 5 6 4 2 3 4 3 2
 unsigned char code melody[] = {
-    5, 5, 6, 5, 1, 7,    // Happy birthday to you
-    5, 5, 6, 5, 2, 1,    // Happy birthday to you
-    5, 5, 5, 3, 1, 7, 6, // Happy birthday dear...
-    4, 4, 3, 1, 2, 1     // Happy birthday to you
+    5, 5, 4, 1, 5, 5, 6, 4,          // "Last Christmas, I gave you my heart"
+    2, 2, 5, 5, 6, 4, 2, 3, 4, 3, 2, // "But the very next day, you gave it away"
+    6, 5, 2, 6, 7, 6, 5,             // "This year, to save me from tears"
+    4, 3, 4, 3, 3, 4, 3, 1           // "I'll give it to someone special"
 };
 
-// Note durations in milliseconds (rests merged into previous notes)
+// Note durations in milliseconds (faster tempo)
 unsigned int code durations[] = {
-    300, 300, 600, 600, 600, 1100,      // First line (7 extended by 200)
-    300, 300, 600, 600, 600, 1100,      // Second line (1 extended by 200)
-    300, 300, 600, 600, 600, 600, 1100, // Third line (6 extended by 200)
-    600, 600, 600, 600, 600, 1200       // Fourth line
+    250, 120, 180, 180, 250, 120, 250, 400,                // First line
+    250, 120, 120, 120, 180, 180, 180, 120, 120, 120, 400, // Second line
+    250, 180, 120, 180, 180, 180, 400,                     // Third line
+    180, 120, 120, 120, 120, 120, 120, 500                 // Fourth line
 };
 
 void main(void)
