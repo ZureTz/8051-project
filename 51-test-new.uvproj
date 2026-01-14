@@ -396,6 +396,16 @@
               <FileType>5</FileType>
               <FilePath>.\delay.h</FilePath>
             </File>
+            <File>
+              <FileName>font_table.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\font_table.h</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\lcd.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -405,6 +415,16 @@
               <FileName>delay.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>font_table.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\font_table.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\lcd.c</FilePath>
             </File>
           </Files>
         </Group>
