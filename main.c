@@ -3,147 +3,124 @@
 #include "utils.h"
 #include "delay.h"
 
-// External interrupt pins
-sbit K3 = P3 ^ 2; // INT0 - External interrupt 0
-sbit K4 = P3 ^ 3; // INT1 - External interrupt 1
+// define buzzer pin
+sbit BUZZER = P1 ^ 5;
 
-// Bit select control pins (138 decoder)
-sbit LED_A = P2 ^ 2;
-sbit LED_B = P2 ^ 3;
-sbit LED_C = P2 ^ 4;
+// Musical note frequencies (half period in microseconds for middle C octave)
+// Half period = 1/(2*frequency) * 1000000
+#define NOTE_1_DO 1908  // C4 - 262 Hz
+#define NOTE_2_RE 1701  // D4 - 294 Hz
+#define NOTE_3_MI 1515  // E4 - 330 Hz
+#define NOTE_4_FA 1433  // F4 - 349 Hz
+#define NOTE_5_SOL 1276 // G4 - 392 Hz
+#define NOTE_6_LA 1136  // A4 - 440 Hz
+#define NOTE_7_SI 1012  // B4 - 494 Hz
+#define NOTE_REST 0     // Rest/silence
 
-// Common cathode 7-segment display encoding (0-9)
-unsigned char code digitTable[] = {
-    0x3F, // 0
-    0x06, // 1
-    0x5B, // 2
-    0x4F, // 3
-    0x66, // 4
-    0x6D, // 5
-    0x7D, // 6
-    0x07, // 7
-    0x7F, // 8
-    0x6F  // 9
+// Duration for each note in milliseconds
+#define NOTE_DURATION 500
+
+/**
+ * @brief Play a single tone by generating square wave
+ * @param halfPeriod Half period of the square wave in microseconds (0 for silence)
+ * @param duration Duration to play the tone in milliseconds
+ */
+void playTone(unsigned int halfPeriod, unsigned int duration)
+{
+  unsigned int cycles;
+
+  if (halfPeriod == 0)
+  {
+    // Rest - no sound
+    delayMiliseconds(duration);
+    return;
+  }
+
+  // Calculate number of cycles needed for the duration
+  // cycles = duration_ms * 1000 / (halfPeriod_us * 2)
+  cycles = ((unsigned long)duration * 1000UL) / ((unsigned long)halfPeriod * 2);
+
+  while (cycles--)
+  {
+    BUZZER = 1;
+    delayMicroseconds(halfPeriod);
+    BUZZER = 0;
+    delayMicroseconds(halfPeriod);
+  }
+}
+
+/**
+ * @brief Play a musical note by its number (1-7)
+ * @param note Note number (1=Do, 2=Re, 3=Mi, 4=Fa, 5=Sol, 6=La, 7=Si, 0=Rest)
+ * @param duration Duration to play the note in milliseconds
+ */
+void playNote(unsigned char note, unsigned int duration)
+{
+  unsigned int halfPeriod;
+
+  switch (note)
+  {
+  case 1:
+    halfPeriod = NOTE_1_DO;
+    break;
+  case 2:
+    halfPeriod = NOTE_2_RE;
+    break;
+  case 3:
+    halfPeriod = NOTE_3_MI;
+    break;
+  case 4:
+    halfPeriod = NOTE_4_FA;
+    break;
+  case 5:
+    halfPeriod = NOTE_5_SOL;
+    break;
+  case 6:
+    halfPeriod = NOTE_6_LA;
+    break;
+  case 7:
+    halfPeriod = NOTE_7_SI;
+    break;
+  default:
+    halfPeriod = NOTE_REST;
+    break;
+  }
+
+  playTone(halfPeriod, duration);
+}
+
+// Happy Birthday melody
+// Based on sheet music: 5 5 6 5 1 7, 5 5 6 5 2 1, 5 5 5 3 1 7 6, 4 4 3 1 2 1
+unsigned char code melody[] = {
+    5, 5, 6, 5, 1, 7,    // Happy birthday to you
+    5, 5, 6, 5, 2, 1,    // Happy birthday to you
+    5, 5, 5, 3, 1, 7, 6, // Happy birthday dear...
+    4, 4, 3, 1, 2, 1     // Happy birthday to you
 };
 
-// Counter variables
-
-// K3 (left 4 digits) shows fibonacci-like sequence
-unsigned int prevprev0 = 0; // PrevPrev for K3 (left 4 digits)
-unsigned int prev0 = 1;     // Prev for K3 (left 4 digits)
-unsigned int sum0 = 0;      // Sum for K3 based on previous count
-// K4 (right 4 digits) is a simple incrementing counter
-unsigned int count1 = 0; // Count for K4 (right 4 digits)
-
-// Key press flags
-bit key0Pressed = false; // K3 pressed flag
-bit key1Pressed = false; // K4 pressed flag
-
-// Display buffer for 8 digits
-unsigned char displayBuf[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-
-// Function to update display buffer from counter values
-void updateDisplayBuffer(unsigned int num0, unsigned int num1)
-{
-  // Left 4 digits show count0
-  displayBuf[0] = num0 / 1000;
-  displayBuf[1] = (num0 / 100) % 10;
-  displayBuf[2] = (num0 / 10) % 10;
-  displayBuf[3] = num0 % 10;
-
-  // Right 4 digits show count1
-  displayBuf[4] = num1 / 1000;
-  displayBuf[5] = (num1 / 100) % 10;
-  displayBuf[6] = (num1 / 10) % 10;
-  displayBuf[7] = num1 % 10;
-}
-
-// Function to select which digit to display (0-7)
-void selectDigit(unsigned char digit)
-{
-  // Use 3-bit ABC to select digit through 138 decoder
-  LED_A = digit & 0x01;
-  LED_B = (digit >> 1) & 0x01;
-  LED_C = (digit >> 2) & 0x01;
-}
-
-// External interrupt 0 service routine (K3)
-void INT0_ISR(void) interrupt 0
-{
-  unsigned int i;
-
-  // Debounce: simple delay loop (~2ms)
-  for (i = 0; i < 2000; i++)
-    continue;
-
-  // Check if key is still pressed after debounce
-  if (K3 == 0 && !key0Pressed)
-  {
-    key0Pressed = true; // Set flag, will be processed in main loop
-  }
-}
-
-// External interrupt 1 service routine (K4)
-void INT1_ISR(void) interrupt 2
-{
-  unsigned int i;
-
-  // Debounce: simple delay loop (~2ms)
-  for (i = 0; i < 2000; i++)
-    continue;
-
-  // Check if key is still pressed after debounce
-  if (K4 == 0 && !key1Pressed)
-  {
-    key1Pressed = true; // Set flag, will be processed in main loop
-  }
-}
+// Note durations in milliseconds (rests merged into previous notes)
+unsigned int code durations[] = {
+    300, 300, 600, 600, 600, 1100,      // First line (7 extended by 200)
+    300, 300, 600, 600, 600, 1100,      // Second line (1 extended by 200)
+    300, 300, 600, 600, 600, 600, 1100, // Third line (6 extended by 200)
+    600, 600, 600, 600, 600, 1200       // Fourth line
+};
 
 void main(void)
 {
   unsigned char i;
+  unsigned char melodyLength = sizeof(melody) / sizeof(melody[0]);
 
-  // Initialize display buffer
-  updateDisplayBuffer(sum0, count1);
-
-  // Configure external interrupts
-  IT0 = 1; // INT0 triggered by falling edge
-  IT1 = 1; // INT1 triggered by falling edge
-  EX0 = 1; // Enable INT0
-  EX1 = 1; // Enable INT1
-  EA = 1;  // Enable global interrupt
-
-  // Main loop: dynamic scanning display
   while (true)
   {
-    // Display scanning loop
-    for (i = 0; i < 8; i++)
+    // Play the melody
+    for (i = 0; i < melodyLength; i++)
     {
-      selectDigit(i);                 // Select digit
-      P0 = digitTable[displayBuf[i]]; // Output segment data
-      delayMiliseconds(2);            // Display for 2ms
-      P0 = 0x00;                      // Turn off to prevent ghosting
+      playNote(melody[i], durations[i]);
+      delayMiliseconds(50); // Short pause between notes
     }
 
-    // Check K3 key release and update
-    if (key0Pressed)
-    {
-      prevprev0 = prev0;
-      prev0 = sum0;
-
-      // Calculate next Fibonacci-like number (capped at 9999)
-      sum0 = prevprev0 + prev0 > 9999 ? 9999 : prevprev0 + prev0;
-
-      updateDisplayBuffer(sum0, count1);
-      key0Pressed = false; // Clear flag
-    }
-
-    // Check K4 key release and update
-    if (key1Pressed)
-    {
-      count1 = (count1 + 1) > 9999 ? 0 : (count1 + 1);
-      updateDisplayBuffer(sum0, count1);
-      key1Pressed = false; // Clear flag
-    }
+    // Longer pause before repeating
+    delayMiliseconds(2000);
   }
 }
