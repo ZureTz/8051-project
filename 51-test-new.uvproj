@@ -411,6 +411,21 @@
               <FileType>5</FileType>
               <FilePath>.\keyboard.h</FilePath>
             </File>
+            <File>
+              <FileName>calculator.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\calculator.h</FilePath>
+            </File>
+            <File>
+              <FileName>stack.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\stack.h</FilePath>
+            </File>
+            <File>
+              <FileName>token.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\token.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -435,6 +450,21 @@
               <FileName>keyboard.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\keyboard.c</FilePath>
+            </File>
+            <File>
+              <FileName>calculator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\calculator.c</FilePath>
+            </File>
+            <File>
+              <FileName>stack.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stack.c</FilePath>
+            </File>
+            <File>
+              <FileName>token.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\token.c</FilePath>
             </File>
           </Files>
         </Group>

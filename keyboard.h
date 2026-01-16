@@ -7,14 +7,14 @@
 #define MATRIX_KEYPAD P1
 
 // Independent Keys Pin Definitions (Connected to P3)
-sbit KEY_DOT = P3 ^ 0;         // '.'
-sbit KEY_LEFT_PAREN = P3 ^ 1;  // '('
-sbit KEY_RIGHT_PAREN = P3 ^ 2; // ')'
-sbit KEY_BACKSPACE = P3 ^ 3;   // Backspace
-sbit KEY_RESERVED_1 = P3 ^ 4;  // Reserved
-sbit KEY_RESERVED_2 = P3 ^ 5;  // Reserved
-sbit KEY_RESERVED_3 = P3 ^ 6;  // Reserved
-sbit KEY_RESERVED_4 = P3 ^ 7;  // Reserved
+sbit KEY_DOT = P3 ^ 0;          // '.'
+sbit KEY_LEFT_PAREN = P3 ^ 1;   // '('
+sbit KEY_RIGHT_PAREN = P3 ^ 2;  // ')'
+sbit KEY_BACKSPACE = P3 ^ 3;    // Backspace
+sbit KEY_SCROLL_LEFT = P3 ^ 4;  // Scroll left (K5)
+sbit KEY_SCROLL_RIGHT = P3 ^ 5; // Scroll right (K6)
+sbit KEY_RESERVED_3 = P3 ^ 6;   // Reserved
+sbit KEY_RESERVED_4 = P3 ^ 7;   // Reserved
 
 // Key Code Definitions
 // Matrix Keypad (16 keys)
@@ -39,7 +39,9 @@ sbit KEY_RESERVED_4 = P3 ^ 7;  // Reserved
 #define KEY_DOT_CHAR '.'
 #define KEY_LEFT_PAREN_CHAR '('
 #define KEY_RIGHT_PAREN_CHAR ')'
-#define KEY_BACKSPACE_CHAR 0x08 // Backspace ASCII code
+#define KEY_BACKSPACE_CHAR 0x08    // Backspace ASCII code
+#define KEY_SCROLL_LEFT_CHAR 0x11  // Scroll left control code
+#define KEY_SCROLL_RIGHT_CHAR 0x12 // Scroll right control code
 
 // No Key Pressed
 #define KEY_NONE 0x00

@@ -147,6 +147,36 @@ unsigned char Keyboard_ScanIndependent(void)
     return KEY_BACKSPACE_CHAR;
   }
 
+  // Check scroll left key (K5)
+  if (KEY_SCROLL_LEFT == 0)
+  {
+    delayMiliseconds(10);
+    if (KEY_SCROLL_LEFT != 0)
+    {
+      return KEY_NONE;
+    }
+
+    while (KEY_SCROLL_LEFT == 0)
+      ;
+    delayMiliseconds(10);
+    return KEY_SCROLL_LEFT_CHAR;
+  }
+
+  // Check scroll right key (K6)
+  if (KEY_SCROLL_RIGHT == 0)
+  {
+    delayMiliseconds(10);
+    if (KEY_SCROLL_RIGHT != 0)
+    {
+      return KEY_NONE;
+    }
+
+    while (KEY_SCROLL_RIGHT == 0)
+      ;
+    delayMiliseconds(10);
+    return KEY_SCROLL_RIGHT_CHAR;
+  }
+
   return KEY_NONE;
 }
 
