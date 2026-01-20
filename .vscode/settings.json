@@ -1,9 +1,6 @@
 {
+  "C_Cpp.intelliSenseEngine": "default",
   "C_Cpp.errorSquiggles": "disabled",
   "C_Cpp.default.compilerPath": "",
-  "cSpell.words": [
-    "DDRAM",
-    "Keil",
-    "RPAREN"
-  ]
+  "cSpell.words": ["DDRAM", "Keil", "RPAREN"]
 }
